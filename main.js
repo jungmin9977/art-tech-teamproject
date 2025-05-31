@@ -58,7 +58,7 @@ function windowResized() {
   if (input && button && nextButton) {
     input.position(width / 2 - 170, 180);
     button.position(input.x + input.width, 180);
-    nextButton.position(width / 2 + 140, 180);
+    nextButton.position(width - 180, height - 100);
   }
   // FillStage 위치 재설정
   if (inputBox && submitButton) {
@@ -73,8 +73,21 @@ function showEmptyStageUI() {
   button.show();
   nextButton.hide();
 }
+
 function hideEmptyStageUI() {
   input.hide();
   button.hide();
   nextButton.hide();
+}
+
+function showFillStageUI() {
+  if (inputBox) inputBox.show();
+  if (submitButton) submitButton.show();
+  if (fillNextButton) fillNextButton.show();
+}
+
+function hideFillStageUI() {
+  if (inputBox) inputBox.hide();
+  if (submitButton) submitButton.hide();
+  if (fillNextButton) fillNextButton.hide();
 }

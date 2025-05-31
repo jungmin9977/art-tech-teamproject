@@ -152,8 +152,8 @@ function setupFillStageUI() {
 
   fillNextButton.mousePressed(() => {
     hideFillStageUI();
-    fillLoadingStartTime = millis();
-    currentScene = 'fillLoading';
+    loadingStartTime = millis();
+    currentScene = 'loading';
   });
 }
 
