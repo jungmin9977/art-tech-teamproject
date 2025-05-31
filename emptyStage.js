@@ -1,64 +1,77 @@
-// emptyStage.js - 비움: 고민을 파도에 흘려보내기
+// =================== Empty Stage UI/모래사장 ===================
+function setupEmptyStageUI() {
+  sandY = height * 0.6;
+  waveStartY = sandY * 0.7;
+  waveY = waveStartY;
+  waveTargetY = sandY + 100;
 
-let sandY;
-let waveY;
-let waveTargetY;
-let waveStartY;
-let waveState = 'idle'; // 'idle', 'down', 'up'
-let worryText = '';
-let input, button;
-
-function drawEmptyStage() {
-  background('#aee6f9');
-  drawSand();
-  drawWave(waveY);
-  drawGuideText();
-
-  if (worryText && waveState !== 'idle') {
-    drawWorryText();
-  }
-  handleWaveAnimation();
-}
-
-function drawGuideText() {
-  fill(90, 70, 40);
-  textSize(24);
-  textAlign(CENTER, CENTER);
-  text(
-    '마음에 남아있는 고민이나 걱정, 불안, 슬픔 등\n비우고 싶은 것을 솔직하게 적어주세요.',
-    width / 2,
-    120
-  );
-}
-
-function setupInputUI() {
+  // 입력창
   input = createInput('');
   input.position(width / 2 - 170, 180);
   input.size(300);
+  input.attribute('placeholder', '');
   input.style('background', '#fdf3df');
   input.style('border', '2px solid #f3e0b7');
-  input.style('border-radius', '10px 0 0 10px');
+  input.style('border-top-left-radius', '10px');
+  input.style('border-bottom-left-radius', '10px');
+  input.style('border-top-right-radius', '0px');
+  input.style('border-bottom-right-radius', '0px');
   input.style('padding', '14px 10px');
   input.style('font-size', '20px');
   input.style('color', '#a67c52');
   input.style('outline', 'none');
+  input.style('box-shadow', 'none');
   input.style('box-sizing', 'border-box');
+  input.input(() => updateNextButton());
+  input.hide();
 
+  // 비우기 버튼
   button = createButton('비우기');
   button.position(input.x + input.width, 180);
   button.style('background', 'linear-gradient(90deg, #ffb347 0%, #ff9900 100%)');
   button.style('color', 'white');
   button.style('border', '2px solid #f3e0b7');
-  button.style('border-radius', '0 10px 10px 0');
+  button.style('border-top-right-radius', '10px');
+  button.style('border-bottom-right-radius', '10px');
+  button.style('border-top-left-radius', '0px');
+  button.style('border-bottom-left-radius', '0px');
   button.style('font-size', '20px');
   button.style('padding', '11px 15px');
   button.style('margin-left', '-4px');
   button.style('cursor', 'pointer');
+  button.style('font-family', 'inherit');
+  button.style('box-shadow', 'none');
+  button.style('box-sizing', 'border-box');
   button.mousePressed(promptWorry);
+  button.hide();
+
+  // 다음 버튼
+  nextButton = createButton('다음');
+  nextButton.position(width - 180 , height - 100);
+  nextButton.style('background', '#0080FF');
+  nextButton.style('color', 'white');
+  nextButton.style('border', 'none');
+  nextButton.style('border-radius', '10px');
+  nextButton.style('font-size', '20px');
+  nextButton.style('padding', '11px 15px');
+  nextButton.style('margin-left', '10px');
+  nextButton.style('cursor', 'pointer');
+  nextButton.style('font-family', 'inherit');
+  nextButton.style('box-shadow', 'none');
+  nextButton.hide();
+  nextButton.mousePressed(() => {
+    hideEmptyStageUI();
+    currentScene = 'loading';
+    loadingStartTime = millis();
+  });
 }
 
-function keyPressed() {
-  if (keyCode === ENTER) promptWorry();
+function updateNextButton() {
+  if (waveState === 'idle' && worryText === '' && input.value().trim().length === 0) {
+    nextButton.show();
+  } else {
+    nextButton.hide();
+  }
 }
 
 function promptWorry() {
@@ -68,6 +81,7 @@ function promptWorry() {
     worryText = txt;
     input.value('');
     waveState = 'down';
+    updateNextButton();
   }
 }
 
@@ -79,9 +93,7 @@ function handleWaveAnimation() {
       if (waveY >= waveTargetY) {
         waveY = waveTargetY;
         worryText = '';
-        setTimeout(() => {
-          waveState = 'up';
-        }, 600);
+        setTimeout(() => { waveState = 'up'; }, 600);
       }
     }
   } else if (waveState === 'up') {
@@ -90,9 +102,20 @@ function handleWaveAnimation() {
       if (waveY <= waveStartY) {
         waveY = waveStartY;
         waveState = 'idle';
+        updateNextButton();
       }
     }
   }
+}
+
+function drawGuideText() {
+  fill(90, 70, 40);
+  textSize(24);
+  textAlign(CENTER, CENTER);
+  text(
+    '마음에 남아있는 고민이나 걱정, 불안, 슬픔 등 \n 비우고 싶은 감정을 솔직하게 적어보세요.',
+    width / 2, 120
+  );
 }
 
 function drawWave(yBase) {
@@ -151,4 +174,15 @@ function drawWorryText() {
   textSize(28);
   textAlign(CENTER, CENTER);
   text(worryText, width / 2, sandY + 100);
+}
+
+// empty 화면 전체 그리기
+function drawEmptyStage() {
+  background('#aee6f9');
+  drawSand();
+  drawWave(waveY);
+  drawGuideText();
+  if (worryText && waveState !== 'idle') drawWorryText();
+  handleWaveAnimation();
+  updateNextButton();
 }

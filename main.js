@@ -1,89 +1,80 @@
-// main.js - 전체 흐름을 관리하는 메인 컨트롤 파일
+// =================== 화면 전환 및 상태 ===================
+let currentScene = 'empty'; // 'empty', 'loading', 'fill'
+let loadingStartTime = 0;
 
-let stage = "empty";               // 현재 파트: empty, fill, start
-let transitioning = false;         // 전환 중인지 여부
-let transitionText = "";           // 표시할 전환 텍스트
-let transitionStartTime = 0;       // 전환 시작 시간 (ms)
-let nextButtonEmpty, nextButtonFill;
+// emptyStage용 변수들
+let input, button, nextButton;
+let waveState = 'idle';
+let worryText = '';
+let sandY, waveY, waveTargetY, waveStartY;
 
+// =================== p5.js setup ===================
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  setupInputUI();        // fillStage 및 emptyStage에서 UI 생성
-  initClouds();           // fillStage용 구름 초기화
-  createNextButtons();    // 다음 버튼 생성
-  if (stage === 'start') scene = new Scene(); // 시작 파트용 Scene 객체 생성
-  sandY = height * 0.6;   // emptyStage용 변수 초기화
-  waveStartY = sandY * 0.7;
-  waveY = waveStartY;
-  waveTargetY = sandY + 100;
+
+  // Empty Stage 초기화
+  setupEmptyStageUI();
+
+  // Fill Stage 초기화
+  setupFillStageUI();
+  initFillStageClouds();
+
+  // 처음엔 empty UI만 보이게
+  showEmptyStageUI();
+  hideFillStageUI();
 }
 
+// =================== p5.js draw ===================
 function draw() {
-  background(255);
-
-  // 전환 텍스트 상태일 경우
-  if (transitioning) {
-    drawTransitionText();
-    if (millis() - transitionStartTime > 2000) {
-      nextStage();
-      transitioning = false;
-      if (stage === 'start') scene = new Scene(); // startStage에 진입 시 Scene 생성
-    }
-    return;
-  }
-
-  // 현재 스테이지 그리기
-  if (stage === "empty") {
+  if (currentScene === 'empty') {
     drawEmptyStage();
-    if (nextButtonEmpty) nextButtonEmpty.show();
-    if (nextButtonFill) nextButtonFill.hide();
-  } else if (stage === "fill") {
+  } else if (currentScene === 'loading') {
+    drawLoadingScreen();
+    if (millis() - loadingStartTime > 3000) {
+      currentScene = 'fill';
+      showFillStageUI();
+      hideEmptyStageUI();
+    }
+  } else if (currentScene === 'fill') {
     drawFillStage();
-    if (nextButtonEmpty) nextButtonEmpty.hide();
-    if (nextButtonFill) nextButtonFill.show();
-  } else if (stage === "start") {
-    drawStartStage();
-    if (nextButtonEmpty) nextButtonEmpty.hide();
-    if (nextButtonFill) nextButtonFill.hide();
   }
 }
 
-// 전환 시작 함수
-function startTransition(message) {
-  transitionText = message;
-  transitionStartTime = millis();
-  transitioning = true;
-}
-
-// 다음 스테이지로 넘어가기
-function nextStage() {
-  if (stage === "empty") stage = "fill";
-  else if (stage === "fill") stage = "start";
-}
-
-// 전환 텍스트 그리기
-function drawTransitionText() {
-  background(245, 240, 225);
-  fill(80, 60, 40);
+// =================== 로딩 화면 ===================
+function drawLoadingScreen() {
+  background('#f8e7c9');
+  fill(90, 70, 40);
+  textSize(32);
   textAlign(CENTER, CENTER);
-  textSize(28);
-  text(transitionText, width / 2, height / 2);
+  let dots = '.'.repeat(1 + floor((frameCount / 30) % 3));
+  text('흘려보낸 걱정이 증발하는 중' + dots, width / 2, height / 2);
 }
 
-function createNextButtons() {
-  nextButtonEmpty = createButton("다음");
-  nextButtonEmpty.position(width - 200, height - 80);
-  nextButtonEmpty.mousePressed(() => {
-    startTransition("흘려보낸 걱정이 증발하는 중...");
-    nextButtonEmpty.hide();
-  });
-  nextButtonEmpty.hide();
+// =================== 반응형 (리사이즈) ===================
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
 
-  nextButtonFill = createButton("다음");
-  nextButtonFill.position(width - 200, height - 80);
-  nextButtonFill.mousePressed(() => {
-    startTransition("새로운 시작을 준비하는 중...");
-    nextButtonFill.hide();
-  });
-  nextButtonFill.hide();
+  // EmptyStage 위치 재설정
+  if (input && button && nextButton) {
+    input.position(width / 2 - 170, 180);
+    button.position(input.x + input.width, 180);
+    nextButton.position(width / 2 + 140, 180);
+  }
+  // FillStage 위치 재설정
+  if (inputBox && submitButton) {
+    inputBox.position(width / 2 - 260, height / 2 + 40);
+    submitButton.position(width / 2 + 260, height / 2 + 40);
+  }
+}
+
+// =================== UI show/hide ===================
+function showEmptyStageUI() {
+  input.show();
+  button.show();
+  nextButton.hide();
+}
+function hideEmptyStageUI() {
+  input.hide();
+  button.hide();
+  nextButton.hide();
 }
