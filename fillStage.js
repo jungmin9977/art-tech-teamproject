@@ -152,8 +152,9 @@ function setupFillStageUI() {
 
   fillNextButton.mousePressed(() => {
     hideFillStageUI();
-    loadingStartTime = millis();
-    currentScene = 'loading';
+    loadingStartTime = millis(); // 로딩 시작 시간 기록
+    currentScene = 'loadingNewStart'; // 새로운 로딩 씬으로 이동
+    // showNewStartStageUI(); // 새로운 스테이지 UI 표시는 로딩 완료 후 main.js에서 처리
   });
 }
 
@@ -174,7 +175,7 @@ function styleButton(btn) {
   btn.style('color', 'white');
   btn.style('border', '2px solid #f3e0b7');
   btn.style('border-radius', '0 10px 10px 0');
-  btn.style('font-size', '16px');
+  btn.style('font-size', '15px');
   btn.style('padding', '10px 16px 41px 16px');
   btn.style('margin-left', '-4px');
   btn.style('cursor', 'pointer');
