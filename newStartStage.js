@@ -4,7 +4,7 @@ let newStartNextButton;
 // =================== New Start Stage UI ===================
 function setupNewStartStageUI() {
   // 다음 버튼 (필요하다면)
-  newStartNextButton = createButton('다시 시작'); // 예시 버튼
+  newStartNextButton = createButton('end'); // 예시 버튼
   newStartNextButton.position(width - 180, height - 100);
   newStartNextButton.style('background', '#0080FF');
   newStartNextButton.style('color', 'white');
@@ -20,8 +20,8 @@ function setupNewStartStageUI() {
   newStartNextButton.mousePressed(() => {
     // 다시 시작 로직 (예: empty 씬으로 이동)
     hideNewStartStageUI();
-    currentScene = 'empty';
-    showEmptyStageUI();
+    currentScene = 'ending'; // ending 씬으로 이동
+    showEndingCreditStageUI(); // main.js에 병합된 Ending Credit Stage UI 표시 함수 호출
   });
 }
 
