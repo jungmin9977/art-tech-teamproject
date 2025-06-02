@@ -1,15 +1,30 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>마음의 전환</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마음 비우고 채우기</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-  <!-- 각 파트를 연결 (순서 중요) -->
-  <script src="emptyStage.js"></script>   <!-- 비움 파트 -->
-  <script src="fillStage.js"></script>    <!-- 채움 파트 (너) -->
-  <script src="newStartStage.js"></script>   <!-- 시작 파트 -->
-  <script src="main.js"></script>  
+    <script src="emptyStage.js"></script>
+    <script src="fillStage.js"></script>
+    <script src="newStartStage.js"></script>
+    <script src="main.js"></script>
+
 </body>
 </html>
