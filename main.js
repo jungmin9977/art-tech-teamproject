@@ -1,5 +1,5 @@
 // =================== 화면 전환 및 상태 ===================
-let currentScene = 'empty'; // 'empty', 'loading', 'fill', 'loadingNewStart', 'newStart', 'ending'
+let currentScene = 'introduce'; // 'introduce', 'empty', 'loading', 'fill', 'loadingNewStart', 'newStart', 'ending'
 let loadingStartTime = 0;
 
 // =================== Ending Credit Stage 전역 변수 ===================
@@ -14,6 +14,9 @@ let percentages = [
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
+  // Introduce Stage 초기화
+  setupIntroduceStageUI();
+
   // Empty Stage 초기화
   setupEmptyStageUI();
 
@@ -25,18 +28,21 @@ function setup() {
   setupNewStartStageUI();
 
   // Ending Credit Stage 초기화
-  setupEndingCreditStageUI(); // Ending Credit Stage 초기화 함수 호출
+  setupEndingCreditStageUI();
 
-  // 처음엔 empty UI만 보이게
-  showEmptyStageUI();
+  // 처음엔 introduce UI만 보이게
+  showIntroduceStageUI();
+  hideEmptyStageUI();
   hideFillStageUI();
   hideNewStartStageUI();
-  hideEndingCreditStageUI(); // Ending Credit Stage UI 숨김
+  hideEndingCreditStageUI();
 }
 
 // =================== p5.js draw ===================
 function draw() {
-  if (currentScene === 'empty') {
+  if (currentScene === 'introduce') {
+    background(255);
+  } else if (currentScene === 'empty') {
     drawEmptyStage();
   } else if (currentScene === 'loading') {
     drawLoadingScreen();
@@ -47,16 +53,15 @@ function draw() {
     }
   } else if (currentScene === 'fill') {
     drawFillStage();
-  } else if (currentScene === 'loadingNewStart') { // 새로운 로딩 씬 추가
+  } else if (currentScene === 'loadingNewStart') {
     drawLoadingNewStartScreen();
     if (millis() - loadingStartTime > 3000) {
       currentScene = 'newStart';
       showNewStartStageUI();
-      // 이전 씬 UI는 이미 hideFillStageUI()에 의해 숨겨짐
     }
   } else if (currentScene === 'newStart') {
     drawNewStartStage();
-  } else if (currentScene === 'ending') { // ending 씬 추가
+  } else if (currentScene === 'ending') {
     drawEndingCreditStage();
   }
 }
@@ -188,6 +193,9 @@ function drawGroundEnding() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 
+  // Introduce Stage 위치 재설정
+  onResizeIntroduceStage();
+
   // EmptyStage 위치 재설정
   if (input && button && nextButton) {
     input.position(width / 2 - 170, 180);
@@ -203,7 +211,7 @@ function windowResized() {
   onResizeNewStartStage();
 
   // Ending Credit Stage 위치 재설정
-  onResizeEndingCreditStage(); // Ending Credit Stage 리사이즈 함수 호출
+  onResizeEndingCreditStage();
 }
 
 // =================== UI show/hide ===================
