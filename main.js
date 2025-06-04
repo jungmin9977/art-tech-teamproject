@@ -117,8 +117,8 @@ function drawEndingCredits() {
   textSize(40);
   text(' 프로젝트 팀원 ', width/2, 120);
 
-  textSize(20);
-  text('개발: 이진우 : ANT수업을 통해 코딩과 디자인에 대해서 많은 것을 배울 수 있어서 정말 좋은 강의였다고 생각합니다. 감사합니다.', width/2, 200);
+  textSize(23);
+  text('개발: 이진우 \n 소감 : ANT수업을 통해 코딩과 디자인에 대해서 많은 것을 배울 수 있어서 정말 좋은 강의였다고 생각합니다. 감사합니다.\n', width/2, 200);
   text('디자인: 전재민', width/2, 250);
   text('기획: 황정민', width/2, 300);
 }
