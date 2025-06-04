@@ -124,7 +124,7 @@ function drawEndingCredits() {
 }
 
 function drawAIPercentage() {
-  let yPos = 380;
+  let yPos = 480;  // 380에서 480으로 변경하여 더 아래로 내림
   textSize(32);
   text(' AI 사용 현황', width/2, yPos - 40);
   
@@ -280,5 +280,5 @@ function keyPressed() {
         return false;
       }
     }
-  } 
+  }
 }
