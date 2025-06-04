@@ -88,43 +88,25 @@ function drawLoadingNewStartScreen() {
 
 // =================== Ending Credit Stage UI ===================
 function setupEndingCreditStageUI() {
-  returnButton = createButton('처음으로');
-  returnButton.position(width / 2 - 50, height - 80);
-  returnButton.style('background', '#0080FF');
-  returnButton.style('color', 'white');
-  returnButton.style('border', 'none');
-  returnButton.style('border-radius', '10px');
-  returnButton.style('font-size', '20px');
-  returnButton.style('padding', '10px 20px');
-  returnButton.style('cursor', 'pointer');
-  returnButton.style('font-family', 'inherit');
-  returnButton.style('box-shadow', 'none');
-  returnButton.hide();
-  returnButton.mousePressed(() => {
-    hideEndingCreditStageUI();
-    currentScene = 'empty';
-    showEmptyStageUI();
-  });
+  // 버튼 제거
 }
 
 function showEndingCreditStageUI() {
-  if (returnButton) returnButton.show();
+  // 버튼 표시 함수 제거
 }
 
 function hideEndingCreditStageUI() {
-  if (returnButton) returnButton.hide();
+  // 버튼 숨김 함수 제거
 }
 
 function onResizeEndingCreditStage() {
-  if (returnButton) {
-    returnButton.position(width / 2 - 50, height - 80);
-  }
+  // 버튼 위치 조정 함수 제거
 }
 
 // =================== Ending Credit Stage 그리기 함수 ===================
 function drawEndingCreditStage() {
-  drawGradientSkyEnding(); // 함수 이름 충돌 방지를 위해 변경
-  drawGroundEnding(); // 함수 이름 충돌 방지를 위해 변경
+  drawGradientSkyEnding();
+  drawGroundEnding();
   drawEndingCredits();
   drawAIPercentage();
 }
@@ -248,11 +230,11 @@ function hideNewStartStageUI() {
 }
 
 function showEndingCreditStageUI() {
-  if (returnButton) returnButton.show();
+  // 버튼 표시 함수 제거
 }
 
 function hideEndingCreditStageUI() {
-  if (returnButton) returnButton.hide();
+  // 버튼 숨김 함수 제거
 }
 
 // =================== 키 입력 처리 ===================
@@ -298,14 +280,5 @@ function keyPressed() {
         return false;
       }
     }
-  } else if (currentScene === 'ending') {
-    if (keyCode === RIGHT_ARROW) {  // RIGHT ARROW key
-      if (returnButton) {
-        hideEndingCreditStageUI();
-        currentScene = 'empty';
-        showEmptyStageUI();
-        return false;
-      }
-    }
-  }
+  } 
 }
