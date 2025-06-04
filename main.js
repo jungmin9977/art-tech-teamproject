@@ -115,12 +115,17 @@ function drawEndingCredits() {
   fill('#2C3E50');
   textAlign(CENTER, CENTER);
   textSize(40);
-  text(' 프로젝트 팀원 ', width/2, 120);
+  text(' 프로젝트 팀원 ', width/2, 80);
 
-  textSize(23);
-  text('개발: 이진우 \n 소감 : ANT수업을 통해 코딩과 디자인에 대해서 많은 것을 배울 수 있어서 정말 좋은 강의였다고 생각합니다. 감사합니다.\n', width/2, 200);
-  text('디자인: 전재민', width/2, 250);
-  text('기획: 황정민', width/2, 300);
+  textSize(28);
+  text('개발: 이진우', width/2, 180);
+  text('디자인: 전재민', width/2, 260);
+  text('기획: 황정민', width/2, 340);
+
+  textSize(20); // 소감
+  text('소감 : ANT수업을 통해 코딩과 디자인에 대해서 많은 것을 배울 수 있어서 정말 좋은 강의였다고 생각합니다. 감사합니다.', width/2, 215);
+  text('소감 : ', width/2, 295);
+  text('소감 : ', width/2, 375);
 }
 
 function drawAIPercentage() {
