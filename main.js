@@ -5,9 +5,9 @@ let loadingStartTime = 0;
 // =================== Ending Credit Stage 전역 변수 ===================
 let returnButton;
 let percentages = [
-  {part: '비움 파트', value: 10},
-  {part: '채움 파트', value: 10},
-  {part: '시작 파트', value: 10}
+  {part: '비움 파트', value: 90},
+  {part: '채움 파트', value: 90},
+  {part: '시작 파트', value: 90}
 ];
 
 // =================== p5.js setup ===================
