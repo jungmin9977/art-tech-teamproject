@@ -5,9 +5,9 @@ let loadingStartTime = 0;
 // =================== Ending Credit Stage 전역 변수 ===================
 let returnButton;
 let percentages = [
-  {part: '비움 파트', value: 30},
-  {part: '채움 파트', value: 50},
-  {part: '시작 파트', value: 20}
+  {part: '비움 파트', value: 10},
+  {part: '채움 파트', value: 10},
+  {part: '시작 파트', value: 10}
 ];
 
 // =================== p5.js setup ===================
@@ -117,28 +117,31 @@ function drawEndingCredits() {
   textSize(40);
   text(' 프로젝트 팀원 ', width/2, 120);
 
-  textSize(28);
-  text('개발: 이진우', width/2, 200);
+  textSize(20);
+  text('개발: 이진우 : ANT수업을 통해 코딩과 디자인에 대해서 많은 것을 배울 수 있어서 정말 좋은 강의였다고 생각합니다. 감사합니다.', width/2, 200);
   text('디자인: 전재민', width/2, 250);
   text('기획: 황정민', width/2, 300);
 }
 
 function drawAIPercentage() {
-  let yPos = 480;  // 380에서 480으로 변경하여 더 아래로 내림
+  let yPos = 500;  // 380에서 480으로 변경하여 더 아래로 내림
   textSize(32);
-  text(' AI 사용 현황', width/2, yPos - 40);
+  text(' AI 사용 현황', width/2, yPos);
   
-  yPos += 20; // AI 사용 현황 타이틀 아래 간격 조정
+  yPos += 40; // AI 사용 현황 타이틀 아래 간격 조정
   percentages.forEach((item, index) => {
-    fill(255);
+    fill(0);  // 텍스트 색상을 검정색으로 변경
     textSize(20);
     textAlign(LEFT);
     text(item.part, width/2 - 200, yPos + index*60);
     
+    // 얇은 회색 테두리 추가
     noFill();
-    stroke(150);
+    stroke(150);  // 밝은 회색
+    strokeWeight(1);  // 얇은 선
     rect(width/2 - 200, yPos + index*60 + 15, 400, 25);
     
+    // 오렌지색 게이지
     fill('#FFB366');
     noStroke();
     rect(width/2 - 200, yPos + index*60 + 15, 400 * (item.value / 100), 25);
