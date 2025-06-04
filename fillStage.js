@@ -6,6 +6,7 @@ let clouds = [];
 let fillNextButton;
 let fillLoadingState = 0;
 let fillLoadingStartTime = 0;
+let promptText = '';
 
 // ========== Sprout 함수형 ==========
 function createSprout(x, y) {

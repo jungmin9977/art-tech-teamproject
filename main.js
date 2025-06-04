@@ -254,3 +254,58 @@ function showEndingCreditStageUI() {
 function hideEndingCreditStageUI() {
   if (returnButton) returnButton.hide();
 }
+
+// =================== 키 입력 처리 ===================
+function keyPressed() {
+  if (currentScene === 'introduce') {
+    if (keyCode === RIGHT_ARROW) {  // RIGHT ARROW key
+      hideIntroduceStageUI();
+      currentScene = 'empty';
+      showEmptyStageUI();
+      return false;
+    }
+  } else if (currentScene === 'empty') {
+    if (keyCode === ENTER) {  // ENTER key
+      promptWorry();
+      return false;
+    } else if (keyCode === RIGHT_ARROW) {  // RIGHT ARROW key
+      if (nextButton && nextButton.elt.style.display !== 'none') {
+        hideEmptyStageUI();
+        currentScene = 'loading';
+        loadingStartTime = millis();
+        return false;
+      }
+    }
+  } else if (currentScene === 'fill') {
+    if (keyCode === ENTER) {  // ENTER key
+      spawnRain(inputBox.value() || '감사');
+      inputBox.value('');
+      return false;
+    } else if (keyCode === RIGHT_ARROW) {  // RIGHT ARROW key
+      if (fillNextButton && fillNextButton.elt.style.display !== 'none') {
+        hideFillStageUI();
+        loadingStartTime = millis();
+        currentScene = 'loadingNewStart';
+        return false;
+      }
+    }
+  } else if (currentScene === 'newStart') {
+    if (keyCode === RIGHT_ARROW) {  // RIGHT ARROW key
+      if (newStartNextButton) {
+        hideNewStartStageUI();
+        currentScene = 'ending';
+        showEndingCreditStageUI();
+        return false;
+      }
+    }
+  } else if (currentScene === 'ending') {
+    if (keyCode === RIGHT_ARROW) {  // RIGHT ARROW key
+      if (returnButton) {
+        hideEndingCreditStageUI();
+        currentScene = 'empty';
+        showEmptyStageUI();
+        return false;
+      }
+    }
+  }
+}
