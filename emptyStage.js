@@ -1,154 +1,117 @@
-// =================== 전역 변수 ===================
-let input, button, nextButton;
-let waveState = 'idle';
-let waveY, waveTargetY, waveStartY;
-let worryText = '';
-let sandY;
+// evaporation.js
+
+let evaporationTexts = [];
+let evaporationNextButton;
+let evaporationStageActive = false;
+let evaporationDraggingIdx = -1;
+let evaporationClouds = [];
+let cloudY = Math.min(...evaporationClouds.map(c => c.y));
+let evaporationY = cloudY + 120;
 
 
-
-// =================== Empty Stage UI/모래사장 ===================
-function setupEmptyStageUI() {
-  sandY = height * 0.6;
-  waveStartY = sandY * 0.7;
-  waveY = waveStartY;
-  waveTargetY = sandY + 100;
-
-  // 입력창
-  input = createInput('');
-  input.position(width / 2 - 170, 180);
-  input.size(300);
-  input.attribute('placeholder', '');
-  input.style('background', '#fdf3df');
-  input.style('border', '2px solid #f3e0b7');
-  input.style('border-top-left-radius', '10px');
-  input.style('border-bottom-left-radius', '10px');
-  input.style('border-top-right-radius', '0px');
-  input.style('border-bottom-right-radius', '0px');
-  input.style('padding', '14px 10px');
-  input.style('font-size', '20px');
-  input.style('color', '#a67c52');
-  input.style('outline', 'none');
-  input.style('box-shadow', 'none');
-  input.style('box-sizing', 'border-box');
-  input.input(() => updateNextButton());
-  input.hide();
-
-  // 비우기 버튼
-  button = createButton('비우기');
-  button.position(input.x + input.width, 180);
-  button.style('background', 'linear-gradient(90deg, #ffb347 0%, #ff9900 100%)');
-  button.style('color', 'white');
-  button.style('border', '2px solid #f3e0b7');
-  button.style('border-top-right-radius', '10px');
-  button.style('border-bottom-right-radius', '10px');
-  button.style('border-top-left-radius', '0px');
-  button.style('border-bottom-left-radius', '0px');
-  button.style('font-size', '20px');
-  button.style('padding', '11px 15px');
-  button.style('margin-left', '-4px');
-  button.style('cursor', 'pointer');
-  button.style('font-family', 'inherit');
-  button.style('box-shadow', 'none');
-  button.style('box-sizing', 'border-box');
-  button.mousePressed(promptWorry);
-  button.hide();
-
-  // 다음 버튼
-  nextButton = createButton('다음');
-  nextButton.position(width - 180 , height - 100);
-  nextButton.style('background', '#0080FF');
-  nextButton.style('color', 'white');
-  nextButton.style('border', 'none');
-  nextButton.style('border-radius', '10px');
-  nextButton.style('font-size', '20px');
-  nextButton.style('padding', '11px 15px');
-  nextButton.style('margin-left', '10px');
-  nextButton.style('cursor', 'pointer');
-  nextButton.style('font-family', 'inherit');
-  nextButton.style('box-shadow', 'none');
-  nextButton.hide();
-  nextButton.mousePressed(() => {
-    hideEmptyStageUI();
-    currentScene = 'loading';
-    loadingStartTime = millis();
-  });
-}
-
-function updateNextButton() {
-  if (waveState === 'idle' && worryText === '' && input.value().trim().length === 0) {
-    nextButton.show();
-  } else {
-    nextButton.hide();
+function showEvaporationStageUI() {
+  evaporationStageActive = true;
+  evaporationTexts = [];
+  initEvaporationClouds(); // 구름 초기화
+  let startY = height - 120;
+  let gap = 36;
+  for (let i = 0; i < enteredTexts.length; i++) {
+    evaporationTexts.push({
+      text: enteredTexts[i],
+      x: 40,
+      y: startY + i * gap,
+      isDragging: false,
+      offsetX: 0,
+      offsetY: 0,
+      isEvaporating: false,
+      alpha: 255,
+      yOffset: 0
+    });
   }
-}
-
-function promptWorry() {
-  if (waveState !== 'idle') return;
-  let txt = input.value();
-  if (txt.trim().length > 0) {
-    worryText = txt;
-    input.value('');
-    waveState = 'down';
-    updateNextButton();
+  if (!evaporationNextButton) {
+    evaporationNextButton = createButton('다음');
+    evaporationNextButton.position(width - 180, height - 100);
+    evaporationNextButton.style('background', '#0080FF');
+    evaporationNextButton.style('color', 'white');
+    evaporationNextButton.style('border', 'none');
+    evaporationNextButton.style('border-radius', '10px');
+    evaporationNextButton.style('font-size', '20px');
+    evaporationNextButton.style('padding', '11px 15px');
+    evaporationNextButton.style('margin-left', '10px');
+    evaporationNextButton.style('cursor', 'pointer');
+    evaporationNextButton.style('font-family', 'inherit');
+    evaporationNextButton.style('box-shadow', 'none');
+    evaporationNextButton.hide();
+    evaporationNextButton.mousePressed(() => {
+      hideEvaporationStageUI();
+      currentScene = 'loading';
+      loadingStartTime = millis();
+    });
   }
+  evaporationNextButton.hide();
 }
 
-function handleWaveAnimation() {
-  const speed = 4;
-  if (waveState === 'down') {
-    if (waveY < waveTargetY) {
-      waveY += speed;
-      if (waveY >= waveTargetY) {
-        waveY = waveTargetY;
-        worryText = '';
-        setTimeout(() => { waveState = 'up'; }, 600);
-      }
+function hideEvaporationStageUI() {
+  evaporationStageActive = false;
+  if (evaporationNextButton) evaporationNextButton.hide();
+}
+
+function drawEvaporationStage() {
+    background('#aee6f9');
+    drawEvaporationClouds();
+    let cloudY = Math.min(...evaporationClouds.map(c => c.y));
+    let evaporationY = cloudY + 120;     // <<<< 여기서 오프셋 크게!
+    drawEvaporationBoundary(evaporationY);
+    drawSandEvaporation();
+    drawEvaporationGuideText();
+    drawEvaporationTexts();
+    updateEvaporationAnimations();
+    if (evaporationTexts.length === 0) {
+      evaporationNextButton.show();
+    } else {
+      evaporationNextButton.hide();
     }
-  } else if (waveState === 'up') {
-    if (waveY > waveStartY) {
-      waveY -= speed;
-      if (waveY <= waveStartY) {
-        waveY = waveStartY;
-        waveState = 'idle';
-        updateNextButton();
+  }
+  
+
+function drawEvaporationTexts() {
+  textSize(24);
+  textAlign(LEFT, CENTER);
+  for (let t of evaporationTexts) {
+    if (!t.isEvaporating) {
+      fill(90, 70, 40, 255);
+      text(t.text, t.x, t.y);
+    }
+  }
+  for (let t of evaporationTexts) {
+    if (t.isEvaporating) {
+      fill(90, 70, 40, t.alpha);
+      text(t.text, t.x, t.y + t.yOffset);
+    }
+  }
+}
+
+function updateEvaporationAnimations() {
+  for (let i = evaporationTexts.length - 1; i >= 0; i--) {
+    let t = evaporationTexts[i];
+    if (t.isEvaporating) {
+      t.alpha -= 8;
+      t.yOffset -= 2;
+      if (t.alpha <= 0) {
+        evaporationTexts.splice(i, 1);
       }
     }
   }
 }
 
-function drawGuideText() {
+function drawEvaporationGuideText() {
   fill(90, 70, 40);
   textSize(24);
   textAlign(CENTER, CENTER);
-  text(
-    '마음에 남아있는 고민이나 걱정, 불안, 슬픔 등 \n 비우고 싶은 감정을 솔직하게 적어보세요.',
-    width / 2, 120
-  );
+  text('아래의 고민을 하늘로 드래그해서 증발시켜 보세요!', width/2, 80);
 }
 
-function drawWave(yBase) {
-  noStroke();
-  for (let i = 0; i < 3; i++) {
-    let amp = 30 - i * 8;
-    let col = color(173 - i * 30, 216 - i * 30, 230 - i * 60, 120 - i * 30);
-    drawWaveLayer(yBase + i * 18, col, amp, 0.008 + i * 0.002, 0.01 + i * 0.002);
-  }
-}
-
-function drawWaveLayer(yBase, col, amp, freq, speed) {
-  fill(col);
-  beginShape();
-  vertex(0, 0);
-  for (let x = 0; x <= width; x += 8) {
-    let y = yBase + sin((x * freq) + frameCount * speed) * amp;
-    curveVertex(x, y);
-  }
-  vertex(width, 0);
-  endShape(CLOSE);
-}
-
-function drawSand() {
+function drawSandEvaporation() {
   noStroke();
   fill(255, 245, 220);
   beginShape();
@@ -161,37 +124,105 @@ function drawSand() {
   vertex(width, height);
   vertex(0, height);
   endShape(CLOSE);
+}
 
-  fill(238, 214, 175, 180);
-  beginShape();
-  vertex(0, sandY + 18);
-  for (let x = 0; x <= width; x += 20) {
-    let y = sandY + 18 + sin(x * 0.004 + frameCount * 0.003) * 8 + cos(x * 0.008) * 6;
-    curveVertex(x, y);
+// 구름 객체 생성 함수
+function createCloud(x, y, w, speed) {
+    return {
+      x: x,
+      y: y,
+      w: w,
+      h: w * 0.6,
+      speed: speed
+    };
   }
-  vertex(width, sandY + 18);
-  vertex(width, height);
-  vertex(0, height);
-  endShape(CLOSE);
+  
+  // 구름 이동 함수
+  function moveCloud(cloud) {
+    cloud.x += cloud.speed;
+    if (cloud.x - cloud.w / 2 > width) {
+      cloud.x = -cloud.w / 2;
+    }
+  }
+  
+  // 구름 표시 함수
+  function displayCloud(cloud) {
+    noStroke();
+    fill(255, 255, 255, 230);
+    ellipse(cloud.x, cloud.y, cloud.w, cloud.h);
+    ellipse(cloud.x + cloud.w * 0.3, cloud.y + cloud.h * 0.1, cloud.w * 0.7, cloud.h * 0.7);
+    ellipse(cloud.x - cloud.w * 0.3, cloud.y + cloud.h * 0.2, cloud.w * 0.6, cloud.h * 0.6);
+  }
+  
+  // 구름 초기화 함수
+  function initEvaporationClouds() {
+    evaporationClouds = [];
+    for (let i = 0; i < 4; i++) {
+      evaporationClouds.push(createCloud(random(width), random(50, 150), random(100, 180), random(0.3, 1.0)));
+    }
+  }
+  
+  // 구름 그리기 함수
+  function drawEvaporationClouds() {
+    for (let cloud of evaporationClouds) {
+      moveCloud(cloud);
+      displayCloud(cloud);
+    }
+  }
 
-  fill(250, 224, 180);
-  rect(0, sandY + 18, width, height - sandY - 18);
-}
+  function drawEvaporationBoundary(y) {
+    stroke('#7ec6e3');    // 하늘색 계열, 구분되는 색
+    strokeWeight(3);
+    line(0, y, width, y);
+    noStroke();
+  }
+  
 
-function drawWorryText() {
-  fill(90, 70, 40, 220);
-  textSize(28);
-  textAlign(CENTER, CENTER);
-  text(worryText, width / 2, sandY + 100);
+// 드래그 이벤트
+function mousePressed() {
+  if (!evaporationStageActive) return;
+  for (let i = 0; i < evaporationTexts.length; i++) {
+    let t = evaporationTexts[i];
+    if (t.isEvaporating) continue;
+    let w = textWidth(t.text) + 20;
+    let h = 32;
+    if (mouseX > t.x && mouseX < t.x + w && mouseY > t.y - h/2 && mouseY < t.y + h/2) {
+      evaporationDraggingIdx = i;
+      t.isDragging = true;
+      t.offsetX = mouseX - t.x;
+      t.offsetY = mouseY - t.y;
+      return;
+    }
+  }
 }
+function mouseDragged() {
+  if (!evaporationStageActive) return;
+  if (evaporationDraggingIdx !== -1) {
+    let t = evaporationTexts[evaporationDraggingIdx];
+    t.x = mouseX - t.offsetX;
+    t.y = mouseY - t.offsetY;
+  }
+}
+function mouseReleased() {
+    if (!evaporationStageActive) return;
+    if (evaporationDraggingIdx !== -1) {
+      let t = evaporationTexts[evaporationDraggingIdx];
+      t.isDragging = false;
+      let cloudY = Math.min(...evaporationClouds.map(c => c.y));
+      let evaporationY = cloudY + 120;
+      if (t.y < evaporationY) {
+        t.isEvaporating = true;
+      } else {
+        t.x = 40;
+        t.y = height - 120 + evaporationDraggingIdx * 36;
+      }
+      evaporationDraggingIdx = -1;
+    }
+  }
+  
+  
 
-// empty 화면 전체 그리기
-function drawEmptyStage() {
-  background('#aee6f9');
-  drawSand();
-  drawWave(waveY);
-  drawGuideText();
-  if (worryText && waveState !== 'idle') drawWorryText();
-  handleWaveAnimation();
-  updateNextButton();
-}
+// 이벤트 등록
+window.mousePressed = mousePressed;
+window.mouseDragged = mouseDragged;
+window.mouseReleased = mouseReleased;
