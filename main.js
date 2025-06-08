@@ -309,8 +309,8 @@ function drawEndingCredits() {
 
   textSize(20); // 소감
   text('소감 : ANT수업을 통해 코딩과 디자인에 대해서 많은 것을 배울 수 있어서 정말 좋은 강의였다고 생각합니다. 감사합니다.', width/2, 215);
-  text('소감 : 개발자들의 협업과정을 조금이나마 경험해보면서 협업의 중요성을 느낄 수 있는 시간이였습니다.', width/2, 295);
-  text('소감 : ', width/2, 375);
+  text('소감 : ', width/2, 295);
+  text('소감 : 개발자들의 협업과정을 조금이나마 경험해보면서 협업의 중요성을 느낄 수 있는 시간이였습니다.', width/2, 375);
 }
 
 function drawAIPercentage() {
