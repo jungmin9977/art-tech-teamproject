@@ -30,6 +30,9 @@ function setup() {
   // Ending Credit Stage 초기화
   setupEndingCreditStageUI();
 
+  // Loading New Start Screen 초기화
+  setupLoadingNewStartScreen();
+
   // 처음엔 introduce UI만 보이게
   showIntroduceStageUI();
   hideEmptyStageUI();
@@ -55,10 +58,6 @@ function draw() {
     drawFillStage();
   } else if (currentScene === 'loadingNewStart') {
     drawLoadingNewStartScreen();
-    if (millis() - loadingStartTime > 3000) {
-      currentScene = 'newStart';
-      showNewStartStageUI();
-    }
   } else if (currentScene === 'newStart') {
     drawNewStartStage();
   } else if (currentScene === 'ending') {
@@ -77,13 +76,196 @@ function drawLoadingScreen() {
 }
 
 // =================== 새로운 로딩 화면 (Fill -> NewStart) ===================
+let loadingFlowers = [];
+const FLOWER_THRESHOLD = 60;  // 30에서 60으로 증가
+let raindrops = [];
+
+// 초기 새싹 위치 설정
+const INITIAL_SPROUTS = 60;  // 30에서 60으로 증가
+const SPROUT_POSITIONS = [];
+
+class Raindrop {
+  constructor(x) {
+    this.x = x + random(-150, 150);
+    this.y = 0;
+    this.speed = random(5, 10);
+    this.length = random(10, 20);
+  }
+  
+  update() {
+    this.y += this.speed;
+  }
+  
+  display() {
+    stroke(100, 150, 255, 150);
+    strokeWeight(2);
+    line(this.x, this.y, this.x, this.y + this.length);
+  }
+  
+  isOffScreen() {
+    return this.y > height;
+  }
+}
+
+class LoadingFlower {
+  constructor(x, y) {
+    this.position = createVector(x, height);
+    this.targetY = y;
+    this.stemLength = 0;
+    this.maxStemLength = this.position.y - this.targetY;
+    this.stemGrowthRate = 0.3;
+    this.bloomed = false;
+    this.numPetals = int(random(5, 12));
+    this.petalGrowth = 0;
+    this.maxPetalGrowth = random(5, 10);
+    this.petalColor = color(random(200, 255), random(100, 200), random(100, 200));
+    this.leafSize = random(5, 10);
+    this.leafAngle = random(-PI/4, PI/4);
+    this.rainCount = 0;
+    this.rainThreshold = 10;
+    this.hasReceivedRain = false;
+  }
+  
+  grow() {
+    if (!this.hasReceivedRain) return;
+    
+    if (!this.bloomed) {
+      // 줄기 성장
+      this.stemLength += this.stemGrowthRate;
+      if (this.stemLength >= this.maxStemLength) {
+        this.bloomed = true;
+      }
+    } else {
+      // 꽃이 피어남 - 성장 속도 감소
+      if (this.petalGrowth < this.maxPetalGrowth) {
+        this.petalGrowth += 0.02;
+      }
+    }
+  }
+  
+  checkRain(raindrops) {
+    for (let drop of raindrops) {
+      if (abs(drop.x - this.position.x) < 50 && 
+          drop.y > this.position.y - 100 && 
+          drop.y < this.position.y) {
+        this.rainCount++;
+        this.hasReceivedRain = true;
+        
+        if (this.rainCount >= this.rainThreshold) {
+          // 비를 충분히 맞으면 꽃이 더 빨리 피어남 - 성장 속도 감소
+          if (this.bloomed && this.petalGrowth < this.maxPetalGrowth) {
+            this.petalGrowth += 0.05;
+          }
+        }
+      }
+    }
+  }
+  
+  display() {
+    push();
+    translate(this.position.x, this.position.y);
+    
+    // 줄기
+    stroke(34, 139, 34);
+    strokeWeight(2);
+    line(0, 0, 0, -this.stemLength);
+    
+    // 잎
+    if (this.stemLength > 20) {
+      noStroke();
+      fill(34, 139, 34);
+      push();
+      translate(0, -this.stemLength * 0.6);
+      rotate(this.leafAngle);
+      ellipse(0, 0, this.leafSize, this.leafSize * 0.6);
+      pop();
+    }
+    
+    if (this.bloomed) {
+      translate(0, -this.stemLength);
+      noStroke();
+      fill(this.petalColor);
+      for (let i = 0; i < this.numPetals; i++) {
+        let angle = map(i, 0, this.numPetals, 0, TWO_PI);
+        push();
+        rotate(angle + frameCount * 0.01);
+        ellipse(0, this.petalGrowth / 2, this.petalGrowth, this.petalGrowth * 1.2);
+        pop();
+      }
+      fill(255, 204, 0);
+      ellipse(0, 0, this.maxPetalGrowth / 2);
+    } else {
+      // 새싹 표시
+      translate(0, -this.stemLength);
+      noStroke();
+      fill(34, 139, 34);
+      ellipse(0, 0, 10, 15);
+    }
+    pop();
+  }
+  
+  isFullyBloomed() {
+    return this.petalGrowth >= this.maxPetalGrowth;
+  }
+}
+
+function setupLoadingNewStartScreen() {
+  // 초기 새싹 위치 설정
+  for (let i = 0; i < INITIAL_SPROUTS; i++) {
+    let x = random(width * 0.05, width * 0.95);
+    // 땅 위에만 랜덤하게 배치 (height - 80에서 height - 20 사이)
+    let y = random(height - 80, height - 20);
+    SPROUT_POSITIONS.push({x, y});
+    loadingFlowers.push(new LoadingFlower(x, y));
+  }
+}
+
 function drawLoadingNewStartScreen() {
-  background('#e0f7fa'); // 다른 배경색으로 구분
+  // fillStage와 동일한 배경
+  drawGradientSky();
+  drawGround();
+  
+  // 비 생성 (마우스 포인터를 따라)
+  if (mouseIsPressed && frameCount % 2 === 0) {
+    for (let i = 0; i < 5; i++) {
+      raindrops.push(new Raindrop(mouseX));
+    }
+  }
+  
+  // 비 업데이트 및 그리기
+  for (let i = raindrops.length - 1; i >= 0; i--) {
+    raindrops[i].update();
+    raindrops[i].display();
+    if (raindrops[i].isOffScreen()) {
+      raindrops.splice(i, 1);
+    }
+  }
+  
+  // 꽃 업데이트 및 그리기
+  for (let i = loadingFlowers.length - 1; i >= 0; i--) {
+    loadingFlowers[i].grow();
+    loadingFlowers[i].checkRain(raindrops);
+    loadingFlowers[i].display();
+  }
+  
+  // 안내 텍스트
   fill(50, 100, 150);
   textSize(32);
   textAlign(CENTER, CENTER);
   let dots = '.'.repeat(1 + floor((frameCount / 30) % 3));
-  text('새로운 시작을 준비하는 중' + dots, width / 2, height / 2);
+  text('나만의 정원을 가꾸는 중' + dots, width / 2, height / 2);
+  
+  // 마우스 클릭 안내 텍스트
+  textSize(20);
+  fill(34, 139, 34);  // 녹색으로 변경
+  text('마우스를 클릭하면 비가 내려 꽃이 자랍니다', width / 2, height / 2 + 40);
+  
+  // 모든 꽃이 완전히 피었을 때만 다음 화면으로 전환
+  let allFlowersBloomed = loadingFlowers.every(flower => flower.isFullyBloomed());
+  if (allFlowersBloomed) {
+    currentScene = 'newStart';
+    showNewStartStageUI();
+  }
 }
 
 // =================== Ending Credit Stage UI ===================
