@@ -4,6 +4,7 @@ let waveState = 'idle';
 let waveY, waveTargetY, waveStartY;
 let worryText = '';
 let sandY;
+let enteredTexts = [];
 
 
 
@@ -70,8 +71,8 @@ function setupEmptyStageUI() {
   nextButton.hide();
   nextButton.mousePressed(() => {
     hideEmptyStageUI();
-    currentScene = 'loading';
-    loadingStartTime = millis();
+    currentScene = 'evaporation';
+    showEvaporationStageUI();
   });
 }
 
@@ -88,6 +89,7 @@ function promptWorry() {
   let txt = input.value();
   if (txt.trim().length > 0) {
     worryText = txt;
+    enteredTexts.push(txt); // 입력값 저장
     input.value('');
     waveState = 'down';
     updateNextButton();
