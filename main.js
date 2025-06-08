@@ -1,5 +1,5 @@
 // =================== 화면 전환 및 상태 ===================
-let currentScene = 'introduce'; // 'introduce', 'empty', 'loading', 'fill', 'loadingNewStart', 'newStart', 'ending'
+let currentScene = 'introduce'; // 'introduce', 'empty', 'evaporation', 'loading', 'fill', 'loadingNewStart', 'newStart', 'ending'
 let loadingStartTime = 0;
 
 // =================== Ending Credit Stage 전역 변수 ===================
@@ -47,6 +47,9 @@ function draw() {
     background(255);
   } else if (currentScene === 'empty') {
     drawEmptyStage();
+  } 
+    else if (currentScene === 'evaporation') {
+    drawEvaporationStage();
   } else if (currentScene === 'loading') {
     drawLoadingScreen();
     if (millis() - loadingStartTime > 3000) {
@@ -306,7 +309,7 @@ function drawEndingCredits() {
 
   textSize(20); // 소감
   text('소감 : ANT수업을 통해 코딩과 디자인에 대해서 많은 것을 배울 수 있어서 정말 좋은 강의였다고 생각합니다. 감사합니다.', width/2, 215);
-  text('소감 : ', width/2, 295);
+  text('소감 : 개발자들의 협업과정을 조금이나마 경험해보면서 협업의 중요성을 느낄 수 있는 시간이였습니다.', width/2, 295);
   text('소감 : ', width/2, 375);
 }
 
@@ -430,45 +433,19 @@ function hideEndingCreditStageUI() {
 // =================== 키 입력 처리 ===================
 function keyPressed() {
   if (currentScene === 'introduce') {
-    if (keyCode === RIGHT_ARROW) {  // RIGHT ARROW key
-      hideIntroduceStageUI();
-      currentScene = 'empty';
-      showEmptyStageUI();
-      return false;
-    }
+    // ... existing code ...
   } else if (currentScene === 'empty') {
     if (keyCode === ENTER) {  // ENTER key
       promptWorry();
       return false;
-    } else if (keyCode === RIGHT_ARROW) {  // RIGHT ARROW key
-      if (nextButton && nextButton.elt.style.display !== 'none') {
-        hideEmptyStageUI();
-        currentScene = 'loading';
-        loadingStartTime = millis();
-        return false;
-      }
     }
   } else if (currentScene === 'fill') {
     if (keyCode === ENTER) {  // ENTER key
       spawnRain(inputBox.value() || '감사');
       inputBox.value('');
       return false;
-    } else if (keyCode === RIGHT_ARROW) {  // RIGHT ARROW key
-      if (fillNextButton && fillNextButton.elt.style.display !== 'none') {
-        hideFillStageUI();
-        loadingStartTime = millis();
-        currentScene = 'loadingNewStart';
-        return false;
-      }
     }
   } else if (currentScene === 'newStart') {
-    if (keyCode === RIGHT_ARROW) {  // RIGHT ARROW key
-      if (newStartNextButton) {
-        hideNewStartStageUI();
-        currentScene = 'ending';
-        showEndingCreditStageUI();
-        return false;
-      }
-    }
+    // ... existing code ...
   }
 }
