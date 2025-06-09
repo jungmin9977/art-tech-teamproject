@@ -1,6 +1,6 @@
 // ========== 전역 변수 ==========
 let inputBox, submitButton;
-let rains = [];
+let seeds = [];
 let sprouts = [];
 let clouds = [];
 let fillNextButton;
@@ -86,29 +86,42 @@ function drawClouds() {
   }
 }
 
-// ========== Rain ==========
-function spawnRain(text) {
-  for (let i = 0; i < 25; i++) {
-    rains.push({
+// ========== Seed ==========
+function spawnSeed(text) {
+  for (let i = 0; i < 15; i++) {
+    seeds.push({
       text: text,
       x: random(width),
       y: random(-100, 0),
       size: random(16, 28),
-      speed: random(1.5, 3)
+      speed: random(1.5, 3),
+      rotation: random(-PI/4, PI/4),
+      rotationSpeed: random(-0.02, 0.02)
     });
   }
 }
-function updateRain() {
-  for (let i = rains.length - 1; i >= 0; i--) {
-    let drop = rains[i];
-    fill(60, 100, 200);
-    textSize(drop.size);
-    text(drop.text, drop.x, drop.y);
-    drop.y += drop.speed;
 
-    if (drop.y > height - 80) {
-      addSprout(drop.x, height - 80);
-      rains.splice(i, 1);
+function updateSeeds() {
+  for (let i = seeds.length - 1; i >= 0; i--) {
+    let seed = seeds[i];
+    push();
+    translate(seed.x, seed.y);
+    rotate(seed.rotation);
+    fill(139, 69, 19); // 씨앗 색상
+    noStroke();
+    ellipse(0, 0, seed.size, seed.size * 0.6);
+    fill(34, 139, 34); // 녹색으로 변경
+    textSize(seed.size * 0.5); // 크기를 0.8에서 0.5로 축소
+    textAlign(CENTER, CENTER);
+    text(seed.text, 0, -seed.size * 0.15); // 씨앗 위로 조정
+    pop();
+    
+    seed.y += seed.speed;
+    seed.rotation += seed.rotationSpeed;
+
+    if (seed.y > height - 80) {
+      addSprout(seed.x, height - 80);
+      seeds.splice(i, 1);
     }
   }
 }
@@ -133,7 +146,7 @@ function setupFillStageUI() {
   submitButton.position(width / 2 + 130, height / 2);
   styleButton(submitButton);
   submitButton.mousePressed(() => {
-    spawnRain(inputBox.value() || '감사');
+    spawnSeed(inputBox.value() || '감사');
     inputBox.value('');
   });
 
@@ -227,7 +240,7 @@ function drawPromptText() {
   fill('#7C5E3C');
   textAlign(CENTER, CENTER);
   textSize(30);
-  text('이제 비워진 마음에\n새롭게 채우고 싶은 것들을 적어보세요.', width/2, 100);
+  text('이제 비워진 마음에\n새로운 꿈의 씨앗을 심어보세요.', width/2, 100);
   textSize(20);
   text('감사한 일, 행복했던 순간, 앞으로의 다짐 등을 떠올려 입력해보세요.', width/2, 150);
 }
@@ -235,7 +248,7 @@ function drawFillStage() {
   drawGradientSky();
   drawClouds();
   drawPromptText();
-  updateRain();
+  updateSeeds();
   drawSprouts();
   drawGround();
 }

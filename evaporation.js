@@ -19,7 +19,8 @@ function showEvaporationStageUI() {
     evaporationTexts.push({
       text: enteredTexts[i],
       x: 40,
-      y: startY + i * gap,
+      y: height - 120 + i * 36,
+      targetY: height - 120 + i * 36, // 추가!
       isDragging: false,
       offsetX: 0,
       offsetY: 0,
@@ -28,6 +29,7 @@ function showEvaporationStageUI() {
       yOffset: 0
     });
   }
+  
   if (!evaporationNextButton) {
     evaporationNextButton = createButton('다음');
     evaporationNextButton.position(width - 180, height - 100);
@@ -74,35 +76,45 @@ function drawEvaporationStage() {
   }
   
 
-function drawEvaporationTexts() {
-  textSize(24);
-  textAlign(LEFT, CENTER);
-  for (let t of evaporationTexts) {
-    if (!t.isEvaporating) {
-      fill(90, 70, 40, 255);
-      text(t.text, t.x, t.y);
+  function drawEvaporationTexts() {
+    textSize(24);
+    textAlign(LEFT, CENTER);
+    for (let t of evaporationTexts) {
+      if (!t.isDragging && !t.isEvaporating) {
+        t.y += (t.targetY - t.y) * 0.25;
+        if (abs(t.targetY - t.y) < 1) t.y = t.targetY; // 스냅
+      }
+      if (!t.isEvaporating) {
+        fill(90, 70, 40, 255);
+        text(t.text, t.x, t.y);
+      }
     }
-  }
-  for (let t of evaporationTexts) {
-    if (t.isEvaporating) {
-      fill(90, 70, 40, t.alpha);
-      text(t.text, t.x, t.y + t.yOffset);
-    }
-  }
-}
-
-function updateEvaporationAnimations() {
-  for (let i = evaporationTexts.length - 1; i >= 0; i--) {
-    let t = evaporationTexts[i];
-    if (t.isEvaporating) {
-      t.alpha -= 8;
-      t.yOffset -= 2;
-      if (t.alpha <= 0) {
-        evaporationTexts.splice(i, 1);
+    for (let t of evaporationTexts) {
+      if (t.isEvaporating) {
+        fill(90, 70, 40, t.alpha);
+        text(t.text, t.x, t.y + t.yOffset);
       }
     }
   }
-}
+  
+  function updateEvaporationAnimations() {
+    for (let i = evaporationTexts.length - 1; i >= 0; i--) {
+      let t = evaporationTexts[i];
+      if (t.isEvaporating) {
+        t.alpha -= 8;
+        t.yOffset -= 2;
+        if (t.alpha <= 0) {
+          // 증발한 텍스트의 y위치 저장
+          let removedY = t.targetY;
+          evaporationTexts.splice(i, 1);
+          // 아래에 있는 텍스트들의 targetY를 한 칸씩 위로 올림
+          for (let j = i; j < evaporationTexts.length; j++) {
+            evaporationTexts[j].targetY -= 36;
+          }
+        }
+      }
+    }
+  }
 
 function drawEvaporationGuideText() {
   fill(90, 70, 40);
@@ -195,6 +207,7 @@ function mousePressed() {
     }
   }
 }
+
 function mouseDragged() {
   if (!evaporationStageActive) return;
   if (evaporationDraggingIdx !== -1) {
@@ -203,26 +216,20 @@ function mouseDragged() {
     t.y = mouseY - t.offsetY;
   }
 }
-function mouseReleased() {
-    if (!evaporationStageActive) return;
-    if (evaporationDraggingIdx !== -1) {
-      let t = evaporationTexts[evaporationDraggingIdx];
-      t.isDragging = false;
-      let cloudY = Math.min(...evaporationClouds.map(c => c.y));
-      let evaporationY = cloudY + 120;
-      if (t.y < evaporationY) {
-        t.isEvaporating = true;
-      } else {
-        t.x = 40;
-        t.y = height - 120 + evaporationDraggingIdx * 36;
-      }
-      evaporationDraggingIdx = -1;
-    }
-  }
-  
-  
 
-// 이벤트 등록
-window.mousePressed = mousePressed;
-window.mouseDragged = mouseDragged;
-window.mouseReleased = mouseReleased;
+function mouseReleased() {
+  if (!evaporationStageActive) return;
+  if (evaporationDraggingIdx !== -1) {
+    let t = evaporationTexts[evaporationDraggingIdx];
+    t.isDragging = false;
+    let cloudY = Math.min(...evaporationClouds.map(c => c.y));
+    let evaporationY = cloudY + 120;
+    if (t.y < evaporationY) {
+      t.isEvaporating = true;
+    } else {
+      t.x = 40;
+      t.targetY = height - 120 + evaporationDraggingIdx * 36; // targetY로 복귀
+    }
+    evaporationDraggingIdx = -1;
+  }
+}
