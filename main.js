@@ -441,7 +441,7 @@ function keyPressed() {
     }
   } else if (currentScene === 'fill') {
     if (keyCode === ENTER) {  // ENTER key
-      spawnRain(inputBox.value() || '감사');
+      spawnSeed(inputBox.value() || '감사');
       inputBox.value('');
       return false;
     }
