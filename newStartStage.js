@@ -7,6 +7,8 @@ let cloudX2 = -400;
 // 무지개 투명도 변수
 let rainbowOpacity = 0;
 let rainbowFadeIn = true;
+// 꽃 위치 배열
+let flowerPositions = [];
 
 // =================== New Start Stage UI ===================
 // New Start Stage의 UI 요소들을 초기화하는 함수
@@ -59,7 +61,7 @@ function drawNewStartStage() {
   drawRainbow();
   drawNewStartGround();
   drawNewStartSprouts();
- 
+  drawFlowers();
   drawNewStartText();
 }
 
@@ -241,6 +243,194 @@ function drawRainbow() {
   for (let i = 0; i < rainbowColors.length; i++) {
     stroke(rainbowColors[i]);
     arc(arcX, arcY, arcRadius - i * thickness, arcRadius - i * thickness, PI, 0);
+  }
+}
+
+// 꽃을 그리는 함수
+function drawFlowers() {
+  // 꽃 위치 초기화 (처음 한 번만)
+  if (flowerPositions.length === 0) {
+    for (let i = 0; i < 40; i++) {  // 25개에서 40개로 증가
+      // 더 자연스러운 분포를 위해 x, y 좌표를 조정
+      let x = random(width * 0.05, width * 0.95);  // 화면 가장자리까지 꽃 배치
+      let y = random(height * 0.6, height * 0.9);  // 더 넓은 범위에 꽃 배치
+      
+      // 꽃 크기를 더 다양하게
+      let size = random(0.7, 1.3);  // 크기 범위 확대
+      
+      flowerPositions.push({
+        x: x,
+        y: y,
+        type: floor(random(5)), // 0: 데이지, 1: 튤립, 2: 코스모스, 3: 장미, 4: 수국
+        size: size,
+        swayOffset: random(1000),
+        color: random(1) > 0.5 ? 1 : 0,  // 장미와 수국의 색상 변형을 위한 변수
+        swayAmount: random(0.15, 0.25)  // 각 꽃마다 다른 흔들림 강도
+      });
+    }
+  }
+
+  // 각 꽃 그리기
+  for (let flower of flowerPositions) {
+    push();
+    translate(flower.x, flower.y);
+    
+    // 바람에 흔들리는 효과 (각 꽃마다 다른 강도로)
+    let sway = sin(frameCount * 0.05 + flower.swayOffset) * flower.swayAmount;
+    rotate(sway);
+    
+    // 꽃 종류에 따라 다른 그리기 함수 호출
+    switch(flower.type) {
+      case 0:
+        drawDaisy(flower.size);
+        break;
+      case 1:
+        drawTulip(flower.size);
+        break;
+      case 2:
+        drawCosmos(flower.size);
+        break;
+      case 3:
+        drawRose(flower.size, flower.color);
+        break;
+      case 4:
+        drawHydrangea(flower.size, flower.color);
+        break;
+    }
+    pop();
+  }
+}
+
+// 데이지 꽃 그리기
+function drawDaisy(size) {
+  // 줄기
+  stroke(80, 150, 80);
+  strokeWeight(3 * size);
+  line(0, 0, 0, -40 * size);
+  
+  // 꽃잎
+  noStroke();
+  fill(255, 255, 255, 200);
+  for (let i = 0; i < 12; i++) {
+    push();
+    translate(0, -40 * size);
+    rotate(i * PI / 6);
+    ellipse(0, -8 * size, 15 * size, 8 * size);
+    pop();
+  }
+  
+  // 꽃 중앙
+  fill(255, 255, 0);
+  ellipse(0, -40 * size, 15 * size, 15 * size);
+}
+
+// 튤립 꽃 그리기
+function drawTulip(size) {
+  // 줄기
+  stroke(80, 150, 80);
+  strokeWeight(3 * size);
+  line(0, 0, 0, -50 * size);
+  
+  // 꽃잎
+  noStroke();
+  fill(255, 100, 100, 200);
+  beginShape();
+  vertex(0, -50 * size);
+  bezierVertex(
+    15 * size, -60 * size,
+    15 * size, -40 * size,
+    0, -30 * size
+  );
+  bezierVertex(
+    -15 * size, -40 * size,
+    -15 * size, -60 * size,
+    0, -50 * size
+  );
+  endShape(CLOSE);
+}
+
+// 코스모스 꽃 그리기
+function drawCosmos(size) {
+  // 줄기
+  stroke(80, 150, 80);
+  strokeWeight(2 * size);
+  line(0, 0, 0, -45 * size);
+  
+  // 꽃잎
+  noStroke();
+  fill(255, 150, 200, 200);
+  for (let i = 0; i < 8; i++) {
+    push();
+    translate(0, -45 * size);
+    rotate(i * PI / 4);
+    ellipse(0, -10 * size, 20 * size, 8 * size);
+    pop();
+  }
+  
+  // 꽃 중앙
+  fill(255, 255, 200);
+  ellipse(0, -45 * size, 12 * size, 12 * size);
+}
+
+// 장미 꽃 그리기
+function drawRose(size, colorType) {
+  // 줄기
+  stroke(80, 150, 80);
+  strokeWeight(3 * size);
+  line(0, 0, 0, -45 * size);
+  
+  // 가시
+  stroke(100, 150, 100);
+  strokeWeight(2 * size);
+  line(0, -20 * size, 8 * size, -25 * size);
+  line(0, -30 * size, -8 * size, -35 * size);
+  
+  // 꽃잎
+  noStroke();
+  if (colorType === 0) {
+    fill(255, 50, 50, 200);  // 빨간 장미
+  } else {
+    fill(255, 100, 200, 200);  // 분홍 장미
+  }
+  
+  // 꽃잎 레이어
+  for (let layer = 0; layer < 3; layer++) {
+    for (let i = 0; i < 8; i++) {
+      push();
+      translate(0, -45 * size);
+      rotate(i * PI / 4 + layer * PI / 8);
+      ellipse(0, -5 * size, 20 * size, 15 * size);
+      pop();
+    }
+  }
+  
+  // 꽃 중앙
+  fill(255, 255, 200);
+  ellipse(0, -45 * size, 10 * size, 10 * size);
+}
+
+// 수국 꽃 그리기
+function drawHydrangea(size, colorType) {
+  // 줄기
+  stroke(80, 150, 80);
+  strokeWeight(3 * size);
+  line(0, 0, 0, -40 * size);
+  
+  // 작은 꽃들
+  noStroke();
+  for (let i = 0; i < 20; i++) {
+    let angle = random(TWO_PI);
+    let radius = random(5 * size, 15 * size);
+    let x = cos(angle) * radius;
+    let y = sin(angle) * radius - 40 * size;
+    
+    if (colorType === 0) {
+      fill(150, 200, 255, 200);  // 파란 수국
+    } else {
+      fill(200, 150, 255, 200);  // 보라 수국
+    }
+    
+    ellipse(x, y, 8 * size, 8 * size);
   }
 }
 
