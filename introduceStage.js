@@ -6,8 +6,8 @@ let creatorsText;
 // =================== 소개 화면 UI ===================
 function setupIntroduceStageUI() {
   // 제목 텍스트
-  titleText = createElement('h1', '사람의 마음도 청소가 필요하다.');
-  titleText.position(width / 2 - 300, height / 3);
+  titleText = createElement('h1', '비우고, 채우고, 시작하기');
+  titleText.position(width / 2 - 312, height / 3);
   titleText.style('color', '#a67c52');
   titleText.style('font-size', '32px');
   titleText.style('font-family', 'inherit');

@@ -4,6 +4,9 @@ let newStartNextButton;
 // 구름의 x좌표를 저장하는 변수들 (왼쪽에서 오른쪽으로 이동하기 위한 초기값)
 let cloudX1 = -200;
 let cloudX2 = -400;
+// 무지개 투명도 변수
+let rainbowOpacity = 0;
+let rainbowFadeIn = true;
 
 // =================== New Start Stage UI ===================
 // New Start Stage의 UI 요소들을 초기화하는 함수
@@ -201,15 +204,28 @@ function drawSingleSprout(x, y) {
 
 // 무지개를 그리는 함수
 function drawRainbow() {
+  // 무지개 투명도 업데이트
+  if (rainbowFadeIn) {
+    rainbowOpacity = min(rainbowOpacity + 2, 255);
+    if (rainbowOpacity >= 255) {
+      rainbowFadeIn = false;
+    }
+  } else {
+    rainbowOpacity = max(rainbowOpacity - 2, 0);
+    if (rainbowOpacity <= 0) {
+      rainbowFadeIn = true;
+    }
+  }
+
   // 무지개 색상 정의
   let rainbowColors = [
-    color(255, 0, 0, 255),    // 빨강
-    color(255, 165, 0, 255),  // 주황
-    color(255, 255, 0, 255),  // 노랑
-    color(0, 128, 0, 255),    // 초록
-    color(0, 0, 255, 255),    // 파랑
-    color(75, 0, 130, 255),   // 남색
-    color(148, 0, 211, 255)   // 보라
+    color(255, 0, 0, rainbowOpacity),    // 빨강
+    color(255, 165, 0, rainbowOpacity),  // 주황
+    color(255, 255, 0, rainbowOpacity),  // 노랑
+    color(0, 128, 0, rainbowOpacity),    // 초록
+    color(0, 0, 255, rainbowOpacity),    // 파랑
+    color(75, 0, 130, rainbowOpacity),   // 남색
+    color(148, 0, 211, rainbowOpacity)   // 보라
   ];
   
   let arcRadius = width * 0.8;
