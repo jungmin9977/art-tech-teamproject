@@ -303,9 +303,9 @@ function drawEndingCredits() {
   text(' 프로젝트 팀원 ', width/2, 80);
 
   textSize(28);
-  text('개발: 이진우', width/2, 180);
-  text('디자인: 전재민', width/2, 260);
-  text('기획: 황정민', width/2, 340);
+  text('이진우', width/2, 180);
+  text('전재민', width/2, 260);
+  text('황정민', width/2, 340);
 }
 
 function drawAIPercentage() {
