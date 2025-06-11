@@ -302,15 +302,10 @@ function drawEndingCredits() {
   textSize(40);
   text(' 프로젝트 팀원 ', width/2, 80);
 
-  textSize(25);
+  textSize(28);
   text('이진우', width/2, 180);
   text('전재민', width/2, 260);
   text('황정민', width/2, 340);
-
-  textSize(20); // 소감
-  text('소감 : ANT수업을 통해 코딩과 디자인에 대해서 많은 것을 배울 수 있어서 좋았고, 이번 기말 팀프로젝트를 통해서 팀활동이라는 좋은 경험을 할 수 있었던 정말 좋은 강의였다고 생각합니다.', width/2, 215);
-  text('소감 : 단순히 코딩을 하는것이 아닌 무언가를 직접 만들어본다는 느낌이 들어 더욱 능동적이게 수업에 참여하게 되고 많은 것을 배워가게 되는거 같습니다.', width/2, 295);
-  text('소감 : 개발자들의 협업과정을 조금이나마 경험해보면서 협업의 중요성을 느낄 수 있는 시간이였습니다.', width/2, 375);
 }
 
 function drawAIPercentage() {
