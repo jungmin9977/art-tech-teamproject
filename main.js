@@ -5,9 +5,9 @@ let loadingStartTime = 0;
 // =================== Ending Credit Stage 전역 변수 ===================
 let returnButton;
 let percentages = [
-  {part: '비움 파트', value: 70},
-  {part: '채움 파트', value: 60},
-  {part: '시작 파트', value: 70}
+  {part: '비움 파트', value: 90},
+  {part: '채움 파트', value: 90},
+  {part: '시작 파트', value: 90}
 ];
 
 // =================== p5.js setup ===================
@@ -306,6 +306,11 @@ function drawEndingCredits() {
   text('이진우', width/2, 180);
   text('전재민', width/2, 260);
   text('황정민', width/2, 340);
+
+  textSize(20); // 소감
+  text('소감 : ANT수업을 통해 코딩과 디자인에 대해서 많은 것을 배울 수 있어서 정말 좋은 강의였다고 생각합니다. 감사합니다.', width/2, 215);
+  text('소감 :  단순히 코딩을 하는것이 아닌 무언가를 직접 만들어본다는 느낌이 들어 더욱 능동적이게 수업에 참여하게 되고 많은 것을 배워가게 되는거 같습니다.', width/2, 295);
+  text('소감 : 개발자들의 협업과정을 조금이나마 경험해보면서 협업의 중요성을 느낄 수 있는 시간이였습니다.', width/2, 375);
 }
 
 function drawAIPercentage() {
