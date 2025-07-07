@@ -5,6 +5,7 @@ let waveY, waveTargetY, waveStartY;
 let worryText = '';
 let sandY;
 let JM
+let JM2
 
 
 
