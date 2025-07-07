@@ -1,3 +1,12 @@
+// =================== 전역 변수 ===================
+let input, button, nextButton;
+let waveState = 'idle';
+let waveY, waveTargetY, waveStartY;
+let worryText = '';
+let sandY;
+
+
+
 // =================== Empty Stage UI/모래사장 ===================
 function setupEmptyStageUI() {
   sandY = height * 0.6;
