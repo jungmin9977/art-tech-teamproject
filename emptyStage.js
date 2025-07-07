@@ -4,6 +4,7 @@ let waveState = 'idle';
 let waveY, waveTargetY, waveStartY;
 let worryText = '';
 let sandY;
+let JM
 
 
 
